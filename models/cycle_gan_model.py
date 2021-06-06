@@ -4,6 +4,62 @@ from util.image_pool import ImagePool
 from .base_model import BaseModel
 from . import networks
 
+def load_weights(opt):
+        if opt.weights=='parsed':
+            weights_0 = torch.load('./weights/weights_0.pt')
+            weights_1 = torch.load('./weights/weights_1.pt') 
+        elif opt.weights=='simple':
+            cuda0 = torch.device('cuda:0')
+            a = torch.ones([1, 3, 256, 256], dtype=torch.float, device=cuda0)
+            h = a.shape[2]
+            w = a.shape[3]
+            for eye_h in range(int(h*2/10 ),int(h*4.5/10)):
+                for eye_left in range(int(w*2/10 ),int(w*4/10)):
+                    a[0][0][eye_h][eye_left] = 2
+                    a[0][1][eye_h][eye_left] = 2
+                    a[0][2][eye_h][eye_left] = 2
+                for eye_right in range(int(w*6/10 ),int(w*8/10)):
+                    a[0][0][eye_h][eye_right] = 2
+                    a[0][1][eye_h][eye_right] = 2
+                    a[0][2][eye_h][eye_right] = 2
+
+            for lip_h in range(int(h*7/10 ),int(h*8.5/10)): 
+                for lip_w in range(int(w*3.5/10 ),int(w*6.5/10)):
+                    a[0][0][lip_h][lip_w] = 2
+                    a[0][1][lip_h][lip_w] = 2
+                    a[0][2][lip_h][lip_w] = 2
+                    
+            weights_1 = a           
+            
+            cuda0 = torch.device('cuda:0')
+            b = torch.ones([1, 1, 256, 256], dtype=torch.float, device=cuda0)
+            h = b.shape[2]
+            w = b.shape[3]
+            for eye_h in range(int(h*2/10),int(h*4.5/10)):
+                for eye_left in range(int(w*2/10 ),int(w*4/10)):
+                    b[0][0][eye_h][eye_left] = 2
+                for eye_right in range(int(w*6/10 ),int(w*8/10)):
+                    b[0][0][eye_h][eye_right] = 2
+
+            for lip_h in range(int(h*7/10 ),int(h*8.5/10)): 
+                for lip_w in range(int(w*3.5/10 ),int(w*6.5/10)):
+                    b[0][0][lip_h][lip_w] = 2
+            weights_0 = b
+                    
+        pool1 = torch.nn.AvgPool2d(4, stride=2, padding=1)
+        pool2 = torch.nn.AvgPool2d(4, stride=2, padding=1)
+        pool3 = torch.nn.AvgPool2d(4, stride=2, padding=1)
+        pool4 = torch.nn.AvgPool2d(4, stride=1, padding=1)
+        pool5 = torch.nn.AvgPool2d(4, stride=1, padding=1)
+        weights_0 = pool1(weights_0)
+        weights_0 = pool2(weights_0)
+        weights_0 = pool3(weights_0)
+        weights_0 = pool4(weights_0)
+        weights_0 = pool5(weights_0)
+        
+        return weights_0, weights_1
+    
+
 
 class CycleGANModel(BaseModel):
 
@@ -87,60 +143,6 @@ class CycleGANModel(BaseModel):
             self.optimizers.append(self.optimizer_G)
             self.optimizers.append(self.optimizer_D)
             
-    def load_weights(self):
-        if self.opt.weights=='parsed':
-            weights_0 = torch.load('./weights/weights_0.pt')
-            weights_1 = torch.load('./weights/weights_1.pt') 
-        elif self.opt.weights=='simple':
-            cuda0 = torch.device('cuda:0')
-            a = torch.ones([1, 3, 256, 256], dtype=torch.float, device=cuda0)
-            h = a.shape[2]
-            w = a.shape[3]
-            for eye_h in range(int(h*2/10 ),int(h*4.5/10)):
-                for eye_left in range(int(w*2/10 ),int(w*4/10)):
-                    a[0][0][eye_h][eye_left] = 2
-                    a[0][1][eye_h][eye_left] = 2
-                    a[0][2][eye_h][eye_left] = 2
-                for eye_right in range(int(w*6/10 ),int(w*8/10)):
-                    a[0][0][eye_h][eye_right] = 2
-                    a[0][1][eye_h][eye_right] = 2
-                    a[0][2][eye_h][eye_right] = 2
-
-            for lip_h in range(int(h*7/10 ),int(h*8.5/10)): 
-                for lip_w in range(int(w*3.5/10 ),int(w*6.5/10)):
-                    a[0][0][lip_h][lip_w] = 2
-                    a[0][1][lip_h][lip_w] = 2
-                    a[0][2][lip_h][lip_w] = 2
-                    
-            weights_1 = a           
-            
-            cuda0 = torch.device('cuda:0')
-            b = torch.ones([1, 1, 256, 256], dtype=torch.float, device=cuda0)
-            h = b.shape[2]
-            w = b.shape[3]
-            for eye_h in range(int(h*2/10),int(h*4.5/10)):
-                for eye_left in range(int(w*2/10 ),int(w*4/10)):
-                    b[0][0][eye_h][eye_left] = 2
-                for eye_right in range(int(w*6/10 ),int(w*8/10)):
-                    b[0][0][eye_h][eye_right] = 2
-
-            for lip_h in range(int(h*7/10 ),int(h*8.5/10)): 
-                for lip_w in range(int(w*3.5/10 ),int(w*6.5/10)):
-                    b[0][0][lip_h][lip_w] = 2
-            weights_0 = b
-                    
-        pool1 = torch.nn.AvgPool2d(4, stride=2, padding=1)
-        pool2 = torch.nn.AvgPool2d(4, stride=2, padding=1)
-        pool3 = torch.nn.AvgPool2d(4, stride=2, padding=1)
-        pool4 = torch.nn.AvgPool2d(4, stride=1, padding=1)
-        pool5 = torch.nn.AvgPool2d(4, stride=1, padding=1)
-        weights_0 = pool1(weights_0)
-        weights_0 = pool2(weights_0)
-        weights_0 = pool3(weights_0)
-        weights_0 = pool4(weights_0)
-        weights_0 = pool5(weights_0)
-        
-        return weights_0, weights_1
     
 
     def set_input(self, input):
@@ -187,8 +189,8 @@ class CycleGANModel(BaseModel):
             loss_D.backward()
             return loss_D
         
-        weights_0 = self.load_weights()[0]
-        weights_1 = self.load_weights()[1]      
+        weights_0 = load_weights()[0]
+        weights_1 = load_weights()[1]      
         
         loss_D_real = (self.criterionGAN(pred_real, True)* weights_0)[weights_0 > 0].mean()
         # Fake
@@ -244,8 +246,8 @@ class CycleGANModel(BaseModel):
             self.loss_G.backward()
             
         elif self.opt.weights=='parsed' or self.opt.weights=='simple':
-            weights_0 = self.load_weights()[0]
-            weights_1 = self.load_weights()[1] 
+            weights_0 = load_weights()[0]
+            weights_1 = load_weights()[1] 
             
             # GAN loss D_A(G_A(A))
             self.loss_G_A = (self.criterionGAN(self.netD_A(self.fake_B), True)* weights_0)[weights_0 > 0].mean()
