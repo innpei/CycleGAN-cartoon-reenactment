@@ -121,7 +121,7 @@ class CycleGANModel(BaseModel):
         # Real
         
         pred_real = netD(real)
-        if opt.weights=='none':
+        if self.opt.weights=='none':
             loss_D_real = self.criterionGAN(pred_real, True)
             # Fake
             pred_fake = netD(fake.detach())
@@ -131,10 +131,10 @@ class CycleGANModel(BaseModel):
             loss_D.backward()
             return loss_D
         
-        if opt.weights=='parsed':
+        if self.opt.weights=='parsed':
             weights_0 = torch.load('./weights/weights_p_0.pt')
             weights_1 = torch.load('./weights/weights_p_1.pt') 
-        elif opt.weights=='simple':
+        elif self.opt.weights=='simple':
             cuda0 = torch.device('cuda:0')
             a = torch.ones([1, 3, 256, 256], dtype=torch.float, device=cuda0)
             h = a.shape[2]
@@ -223,7 +223,7 @@ class CycleGANModel(BaseModel):
             self.loss_idt_A = 0
             self.loss_idt_B = 0
             
-        if opt.weights=='none':
+        if self.opt.weights=='none':
             # GAN loss D_A(G_A(A))
             self.loss_G_A = self.criterionGAN(self.netD_A(self.fake_B), True)
             # GAN loss D_B(G_B(B))
@@ -236,10 +236,10 @@ class CycleGANModel(BaseModel):
             self.loss_G = self.loss_G_A + self.loss_G_B + self.loss_cycle_A + self.loss_cycle_B + self.loss_idt_A + self.loss_idt_B
             self.loss_G.backward()
             
-        elif opt.weights=='parsed' or opt.weights=='simple':
+        elif self.opt.weights=='parsed' or self.opt.weights=='simple':
             weights_0 = torch.load('./weights/weights_p_0.pt')
             weights_1 = torch.load('./weights/weights_p_1.pt')
-            if opt.weights=='simple':
+            if self.opt.weights=='simple':
                 cuda0 = torch.device('cuda:0')
                 a = torch.ones([1, 3, 256, 256], dtype=torch.float, device=cuda0)
                 h = a.shape[2]
