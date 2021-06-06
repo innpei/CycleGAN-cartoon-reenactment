@@ -132,8 +132,8 @@ class CycleGANModel(BaseModel):
             return loss_D
         
         if self.opt.weights=='parsed':
-            weights_0 = torch.load('./weights/weights_p_0.pt')
-            weights_1 = torch.load('./weights/weights_p_1.pt') 
+            weights_0 = torch.load('./weights/weights_0.pt')
+            weights_1 = torch.load('./weights/weights_1.pt') 
         elif self.opt.weights=='simple':
             cuda0 = torch.device('cuda:0')
             a = torch.ones([1, 3, 256, 256], dtype=torch.float, device=cuda0)
@@ -237,8 +237,8 @@ class CycleGANModel(BaseModel):
             self.loss_G.backward()
             
         elif self.opt.weights=='parsed' or self.opt.weights=='simple':
-            weights_0 = torch.load('./weights/weights_p_0.pt')
-            weights_1 = torch.load('./weights/weights_p_1.pt')
+            weights_0 = torch.load('./weights/weights_0.pt')
+            weights_1 = torch.load('./weights/weights_1.pt')
             if self.opt.weights=='simple':
                 cuda0 = torch.device('cuda:0')
                 a = torch.ones([1, 3, 256, 256], dtype=torch.float, device=cuda0)
