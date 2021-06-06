@@ -14,6 +14,7 @@ Using CycleGAN for cartoon face reenactment. The model is based on [this PyTorch
 ```
 !python train.py --dataroot 'your dataroot here' --name model_name --model cycle_gan  --checkpoints_dir 'yout dataroot for checkpoints here'
 ```
+You may also specify '--weights simple' to use rectangular weights or '--weights parsed' to use weights of eyes and mouth shape
 
 
 ### Using pre-trained model:
