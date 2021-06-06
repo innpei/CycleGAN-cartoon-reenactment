@@ -189,8 +189,8 @@ class CycleGANModel(BaseModel):
             loss_D.backward()
             return loss_D
         
-        weights_0 = load_weights()[0]
-        weights_1 = load_weights()[1]      
+        weights_0 = load_weights(self.opt)[0]
+        weights_1 = load_weights(self.opt)[1]      
         
         loss_D_real = (self.criterionGAN(pred_real, True)* weights_0)[weights_0 > 0].mean()
         # Fake
@@ -246,8 +246,8 @@ class CycleGANModel(BaseModel):
             self.loss_G.backward()
             
         elif self.opt.weights=='parsed' or self.opt.weights=='simple':
-            weights_0 = load_weights()[0]
-            weights_1 = load_weights()[1] 
+            weights_0 = load_weights(self.opt)[0]
+            weights_1 = load_weights(self.opt)[1] 
             
             # GAN loss D_A(G_A(A))
             self.loss_G_A = (self.criterionGAN(self.netD_A(self.fake_B), True)* weights_0)[weights_0 > 0].mean()
