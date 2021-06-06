@@ -6,5 +6,5 @@ echo "Specified [$FILE]"
 
 mkdir -p ./checkpoints/${FILE}_pretrained
 MODEL_FILE=./checkpoints/${FILE}_pretrained/latest_net_G.pth
-URL=https://drive.google.com/file/d/1CdriIwPxmiGOMNANbbJBsoZvCoYtmDDs/view?usp=sharing
+URL=https://docs.google.com/uc?export=download&id=1CdriIwPxmiGOMNANbbJBsoZvCoYtmDDs
 wget -N $URL -O $MODEL_FILE
